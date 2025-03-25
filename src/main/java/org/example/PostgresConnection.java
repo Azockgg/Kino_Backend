@@ -2,33 +2,45 @@ package org.example;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.*;
-import java.util.*;
-import java.util.logging.Level;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
-public class Postgre {
+public class PostgresConnection {
 
-    private static String USER;
-    private static String URL;
-    private static String PASSWORD;
+    private static final Properties properties = new Properties();
 
-    private static void loadConfig() {
-        Properties properties = new Properties();
-        try (FileInputStream input = new FileInputStream("config.properties")) {
-            properties.load(input);
-
-            URL = properties.getProperty("db.url");
-            USER = properties.getProperty("db.user");
-            PASSWORD = properties.getProperty("db.password");
-
+    static {
+        try (FileInputStream fis = new FileInputStream("config.properties")) {
+            properties.load(fis);
         } catch (IOException e) {
-            throw new RuntimeException("Konfigurationsdatei konnte nicht geladen werden.", e);
+            e.printStackTrace();
         }
     }
 
+    public static final String DB_URL = properties.getProperty("db.url");
+    public static final String DB_USER = properties.getProperty("db.user");
+    public static final String DB_PASSWORD = properties.getProperty("db.password");
 
-    Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
+    public void getConnection() {
 
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            System.out.println("Verbindung erfolgreich");
+            connection.close();
+        } catch (Exception e) {
+            System.out.println("Verbindung Fehlgeschlagen");
+            e.printStackTrace();
+        }
 
+    }
+
+    public static void main(String[] args) {
+        PostgresConnection postgresConnection = new PostgresConnection();
+        postgresConnection.getConnection();
+    }
 }
+
+
