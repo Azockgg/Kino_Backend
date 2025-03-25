@@ -27,5 +27,8 @@ public class Postgre {
     }
 
 
+    Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+
 
 }
